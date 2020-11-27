@@ -4,12 +4,16 @@ import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.dimension.DimensionType;
 
 
+import static net.minecraft.network.MessageType.CHAT;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public enum ManhuntCompass {
@@ -35,9 +39,14 @@ public enum ManhuntCompass {
                     trackedPlayer = context.getSource().getPlayer();
                     server = context.getSource().getMinecraftServer();
 
+                    GameMessageS2CPacket messagePacket = new GameMessageS2CPacket(new LiteralText("Tracking " + trackedPlayer.getEntityName()), CHAT, Util.NIL_UUID);
+                    server.getPlayerManager().sendToAll(messagePacket);
+
                     giveCompass();
                     active = true;
                 } else {
+                    GameMessageS2CPacket messagePacket = new GameMessageS2CPacket(new LiteralText("Stop tracking " + trackedPlayer.getEntityName()), CHAT, Util.NIL_UUID);
+                    server.getPlayerManager().sendToAll(messagePacket);
                     active = false;
                 }
                 return 1;
