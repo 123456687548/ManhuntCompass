@@ -52,7 +52,7 @@ public enum ManhuntCompass {
         })));
     }
 
-    public void onTick() {
+    public void onPlayerMove() {
         giveCompass();
         updatePos();
         updateCompass();
@@ -64,6 +64,7 @@ public enum ManhuntCompass {
                 ItemStack compass = new ItemStack(Items.COMPASS);
                 CompoundTag tag = new CompoundTag();
                 tag.putBoolean(COMPASS_TRACKER_ID, true);
+                tag.putBoolean("LodestoneTracked", true);
                 tag.putString("LodestoneDimension", OVERWORLD_STRING);
                 if(lastOverworldPos != null) {
                     tag.put("LodestonePos", NbtHelper.fromBlockPos(lastOverworldPos));
@@ -120,6 +121,7 @@ public enum ManhuntCompass {
                             player.toTag(playerTag);
                             String playerDimention = playerTag.getString("Dimension");
 
+                            tag.putBoolean("LodestoneTracked", true);
                             tag.putString("LodestoneDimension", playerDimention);
                             switch (playerDimention) {
                                 case OVERWORLD_STRING:
@@ -143,6 +145,22 @@ public enum ManhuntCompass {
                 });
             }
         });
+    }
+
+    public BlockPos getLastOverworldPos() {
+        return lastOverworldPos;
+    }
+
+    public BlockPos getLastNetherPos() {
+        return lastNetherPos;
+    }
+
+    public BlockPos getLastEndPos() {
+        return lastEndPos;
+    }
+
+    public ServerPlayerEntity getTrackedPlayer() {
+        return trackedPlayer;
     }
 
     public boolean isActive() {
